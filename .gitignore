@@ -16,7 +16,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-env_opapi_1_lg/
+
 
 build/
 develop-eggs/
