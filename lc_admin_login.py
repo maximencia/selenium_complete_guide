@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from selenium.webdriver.firefox.webdriver import WebDriver
+#from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 import time, unittest
 
@@ -12,7 +13,13 @@ def is_alert_present(wd):
 
 class test_admin_login(unittest.TestCase):
     def setUp(self):
-        self.wd = WebDriver()
+        chrome_driver = webdriver.Chrome()
+        #ie_driver = webdriver.Ie()
+        #firefox_driver = webdriver.Firefox()
+        self.wd = chrome_driver
+        #self.wd = ie_driver
+        #self.wd = firefox_driver
+        #self.wd = webdriver()
         self.wd.implicitly_wait(60)
 
     def find_and_fill_element(self, wd, element_name, value):
@@ -27,7 +34,7 @@ class test_admin_login(unittest.TestCase):
         self.find_and_fill_element(wd,element_name="username",value="admin")
         self.find_and_fill_element(wd,element_name="password",value="admin")
         wd.find_element_by_name("login").click()
-        #time.sleep(5)
+        time.sleep(5)
         wd.find_element_by_link_text("Appearence").click()
         wd.find_element_by_link_text("Catalog").click()
         wd.find_element_by_link_text("Product Groups").click()
