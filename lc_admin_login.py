@@ -4,6 +4,8 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+
 import time, unittest
 
 def is_alert_present(wd):
@@ -16,11 +18,17 @@ def is_alert_present(wd):
 
 class test_admin_login(unittest.TestCase):
     def setUp(self):
-        chrome_driver = webdriver.Chrome(desired_capabilities={"chromeOptions": {"args": ["--start-fullscreen"]}})
-                                        #("chromeOptions":{"arg":["--start-fullscreen"]}))
+        chrome_driver = webdriver.Chrome #(desired_capabilities={"chromeOptions": {"args": ["--start-fullscreen"]}})
+
+        options = Options()
+        options.binary_location = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+        #options.add_argument("start-maximized")
+        options.add_argument("--start-fullscreen")
+
         #ie_driver = webdriver.Ie()
         #firefox_driver = webdriver.Firefox()
-        self.wd = chrome_driver
+
+        self.wd = chrome_driver(chrome_options=options)
         #self.wd = ie_driver
         #self.wd = firefox_driver
         #self.wd = webdriver()
@@ -41,9 +49,9 @@ class test_admin_login(unittest.TestCase):
         self.find_and_fill_element(wd,element_name="username",value="admin")
         self.find_and_fill_element(wd,element_name="password",value="admin")
         wd.find_element_by_name("login").click()
-        # time.sleep(3)
-        # wd.find_element_by_link_text("Appearence").click()
-        # wd.find_element_by_link_text("Catalog").click()
+        time.sleep(3)
+        wd.find_element_by_link_text("Appearence").click()
+        wd.find_element_by_link_text("Catalog").click()
         # wd.find_element_by_link_text("Product Groups").click()
         # wd.find_element_by_link_text("Option Groups").click()
         # wd.find_element_by_link_text("Manufacturers").click()
