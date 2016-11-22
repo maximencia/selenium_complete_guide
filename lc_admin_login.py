@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #from selenium.webdriver.firefox.webdriver import WebDriver
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
 import time, unittest
 
 def is_alert_present(wd):
@@ -11,13 +13,15 @@ def is_alert_present(wd):
     except:
         return False
 
+
 class test_admin_login(unittest.TestCase):
     def setUp(self):
-        chrome_driver = webdriver.Chrome()
-        ie_driver = webdriver.Ie()
+        chrome_driver = webdriver.Chrome(desired_capabilities={"chromeOptions": {"args": ["--start-fullscreen"]}})
+                                        #("chromeOptions":{"arg":["--start-fullscreen"]}))
+        #ie_driver = webdriver.Ie()
         #firefox_driver = webdriver.Firefox()
-        #self.wd = chrome_driver
-        self.wd = ie_driver
+        self.wd = chrome_driver
+        #self.wd = ie_driver
         #self.wd = firefox_driver
         #self.wd = webdriver()
         self.wd.implicitly_wait(60)
@@ -47,7 +51,7 @@ class test_admin_login(unittest.TestCase):
         # wd.find_element_by_link_text("Catalog").click() #  - пока проверки не делаем.
 
         #Список Capabilities https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
-        wd = webdriver.Ie(capabilities={"unexpectedAlertBehaviour": "dismiss"})
+        #wd = webdriver.Ie(capabilities={"unexpectedAlertBehaviour": "dismiss"})
         print(wd.capabilities)
 
         self.assertTrue(success)
