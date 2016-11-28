@@ -1,34 +1,23 @@
-# -*- coding: utf-8 -*-
-from selenium.webdriver.firefox.webdriver import WebDriver
-import time, unittest
+import pytest
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from time import sleep
 
-def is_alert_present(wd):
-    try:
-        wd.switch_to_alert().text
-        return True
-    except:
-        return False
+@pytest.fixture
+def wd(request):
+    driver = webdriver.Chrome()
+    request.addfinalizer(driver.quit)
+    return driver
 
-class first_test(unittest.TestCase):
-    def setUp(self):
-        self.wd = WebDriver()
-        self.wd.implicitly_wait(60)
+def t123(wd):
+    wd.find_element_by_name("q").send_keys("nightly")
 
-    def test_(self):
-        success = True
-        wd = self.wd
 
-        wd.get("http://software-testing.ru/lms/")
-        wd.find_element_by_link_text("Вход").click()
-        wd.find_element_by_id("username").click()
-        wd.find_element_by_id("username").clear()
-        wd.find_element_by_id("username").send_keys("maxim.rumyantsev")
-        time.sleep(10)
-        self.assertTrue(success)
-
-    def tearDown(self):
-        self.wd.quit()
-
-if __name__ == '__main__':
-    unittest.main()
-
+def test_example(wd):
+    wd.get("http://www.google.com/")
+    wd.implicitly_wait(60)
+    #wd.find_element_by_name("q").send_keys("nightly")
+    t123(wd);
+    wd.find_element_by_name("btnG").click()
+    sleep(10)
