@@ -37,12 +37,14 @@ class test_admin_login(unittest.TestCase):
         # используя старую схему запуска, без использования geckodriver.
         # Если Selenium не может сам найти место, куда установлен Firefox ESR -- укажите в параметрах запуска путь к браузеру.
 
-        firefox_driver = webdriver.Firefox(firefox_binary="c:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
+        #firefox_driver = webdriver.Firefox(firefox_binary="c:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
+        #firefox_driver = webdriver.Firefox(firefox_binary="c:\\Program Files\\Nighlty\\firefox.exe") selenium.common.exceptions.WebDriverException: Message: Failed to start browser:
+        #получилось только с версией href="https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-53.0a1.en-US.win32.installer.exe
+        firefox_driver = webdriver.Firefox(firefox_binary="c:\\Program Files (x86)\\Nightly\\firefox.exe")
+                                                           #"c:\\Program Files (x86)\\Nightly\\firefox.exe"
         # firefox_driver = webdriver.Firefox(firefox_binary="c:\\Program Files (x86)\\Mozilla_Firefox_ESR\\firefox.exe")
 
         # # новая схема:
-        # from selenium import webdriver
-        #
         # wd = webdriver.Firefox()
         # # новая схема более явно:
         # firefox_driver= webdriver.Firefox(capabilities={"marionette": True})
