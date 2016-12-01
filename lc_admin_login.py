@@ -58,3 +58,4 @@ def test_admin_login(wd):
 
         #ttt=wd.find_element_by_xpath("//title").text
         #print wd.find_element_by_xpath("//title").text
+        # Максим Максим http://tonyganch.com/git/reset/
