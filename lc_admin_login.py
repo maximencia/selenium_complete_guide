@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -33,6 +34,18 @@ def test_admin_login(wd):
     #sleep(5)
     #p = wd.find_elements_by_xpath("//ul[@id='box-apps-menu']")
     l=wd.find_elements_by_xpath("//*[@id='app-']/a/span[2]")
-    for i in range(len(l)):
+    for i in range(len(l)-15):
+        print (str(i)+".")
         t=wd.find_elements_by_xpath("//*[@id='app-']/a/span[2]")
+        link_name=t[i].text
         t[i].click()
+
+        print link_name
+        #а заголовок в шапке можно получить так: driver.getTitle()
+        tt=wd.title
+        ttt=wd.find_element_by_xpath(".//*[@id='content']/h1").text
+        print tt
+        print ttt
+
+        #ttt=wd.find_element_by_xpath("//title").text
+        #print wd.find_element_by_xpath("//title").text
