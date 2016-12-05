@@ -101,11 +101,32 @@ def test_sticker_verify(wd):
     assert len(duck_crowd) == sticker_sum
 
 
-#
-# ### поиск
-# .//div[starts-with(@id,'box-l')]
-# ###
-# +<div id="box-logotypes">
-#  <div id="box-most-popular" class="box">
-#  <div id="box-campaigns" class="box">
-# +<div id="box-latest-products" class="box">
+
+#1) на странице http://localhost/litecart/admin/?app=countries&doc=countries
+#а) проверить, что страны расположены в алфавитном порядке
+#б) для тех стран, у которых количество зон отлично от нуля -- открыть страницу этой страны и там проверить, что зоны расположены в алфавитном порядке
+def test_countries(wd):
+    wd.get("http://localhost/litecart/admin/login.php")
+    wd.implicitly_wait(60)
+    find_and_fill_element(wd,element_name="username",value="admin")
+    find_and_fill_element(wd,element_name="password",value="admin")
+    wd.find_element_by_name("login").click()
+
+    wd.get("http://localhost/litecart/admin/?app=countries&doc=countries")
+    #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
+    countries=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[5]")
+    zones_count=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[6]")
+    country_acronym=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[4]")
+    country_list=[]
+    geo_zones__index=[]
+    #print len(countries)
+    for country in countries:
+        country_list.append(country.text)
+        print country.text
+    sorted_country_list=sorted(country_list)
+    assert country_list==sorted_country_list
+    #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
+
+
+    #http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA
+    #http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US
