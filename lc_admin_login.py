@@ -119,8 +119,8 @@ def test_countries(wd):
     zones_count=[]
     country_acronym=[]
     index_for_link=[]
-    #rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']")
-    rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row' and position() <= 39]")
+    rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']")
+    #rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row' and position() <= 39]")
     i=0
     for elements in rows:
     # теперь пробежим по столбцам текущего tr из цикла
@@ -131,40 +131,43 @@ def test_countries(wd):
         if int(column[5].text) >0:
             index_for_link.append(i)
         i=i+1
-    print()
-    print (country_list)
-    print (zones_count)
-    print (country_acronym)
-    print
-    print (index_for_link)
+    #сравним список стран и отсортированный список
+    sorted_country_list = sorted(country_list)
+    assert country_list==sorted_country_list
+    #print() print (country_list) print (zones_count) print (country_acronym) print print (index_for_link)
     for i in index_for_link:
-        print (country_acronym[i])
-        print(country_list[i])
-        print(zones_count[i])
-        wd.get("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code="+str(country_acronym[i]))
-    sleep(10)
+        #print (country_acronym[i]) print(country_list[i]) print(zones_count[i])
+        zone_page =("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code="+str(country_acronym[i]))
+        test_geo_zones(wd,zone_page,flag=0)
 
+def test_geo_zones(wd,zones_page,flag):
+    if flag == 1:
+        wd.get("http://localhost/litecart/admin/login.php")
+        wd.implicitly_wait(60)
+        find_and_fill_element(wd,element_name="username",value="admin")
+        find_and_fill_element(wd,element_name="password",value="admin")
+        wd.find_element_by_name("login").click()
 
+    #wd.get("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US")
+    wd.get(zones_page)
+    #получим все зоны
+    rows=wd.find_elements_by_xpath(".//*[@id='table-zones']//tr [not(contains (@class, 'header'))]")
+    #print ('123123'+str(len(rows)))
+    i=0
+    zones_name=[]
+    for elements in rows:
+        # теперь пробежим по столбцам текущего tr из цикла
+            column_z = elements.find_elements_by_tag_name("td")
+            zones_name.append(column_z[2].text)
+    # удалим последний элемент. list.pop([i]), потому что это поле используется для фильтров
+    # Удаляет i-ый элемент и возвращает его. Если индекс не указан, удаляется последний элемент
+    zones_name.pop()
+    #print
+    print (zones_name)
+    sorted_zones_list = sorted(zones_name)
+    #print(sorted_zones_list)
+    assert zones_name==sorted_zones_list
 
-    # wd.get("http://localhost/litecart/admin/?app=countries&doc=countries")
-    # #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[position() <= 10]
-    # countries=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[5]")
-    # zones_count=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[6]")
-    # country_acronym=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[4]")
-    # country_list=[]
-    # geo_zones__index=[]
-    # #print len(countries)
-    # index=0
-    # for country in countries:
-    #     country_list.append(country.text)
-    #     print (country.text)
-    #     print (zones_count(index).text)
-    #
-    #     index=index+1
-    # sorted_country_list=sorted(country_list)
-    # assert country_list==sorted_country_list
-    # #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
-
-
-    #http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA
-    #http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US
+def testets(wd):
+    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US",1)
+    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA",1)
