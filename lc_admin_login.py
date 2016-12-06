@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -100,7 +100,7 @@ def test_sticker_verify(wd):
     assert len(duck_crowd) == sticker_sum
 
 
-
+#задание 9
 #1) на странице http://localhost/litecart/admin/?app=countries&doc=countries
 #а) проверить, что страны расположены в алфавитном порядке
 #б) для тех стран, у которых количество зон отлично от нуля -- открыть страницу этой страны и там проверить,
