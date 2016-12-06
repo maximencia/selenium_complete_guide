@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -10,7 +10,6 @@ def wd(request):
     driver = webdriver.Chrome()
     request.addfinalizer(driver.quit)
     return driver
-
 
 
 def find_and_fill_element(wd, element_name, value):
@@ -31,7 +30,7 @@ def test_admin_login(wd):
     find_and_fill_element(wd,element_name="username",value="admin")
     find_and_fill_element(wd,element_name="password",value="admin")
     wd.find_element_by_name("login").click()
-    print
+    print()
     #sleep(5)
     #p = wd.find_elements_by_xpath("//ul[@id='box-apps-menu']")
     link_array=[]
@@ -70,7 +69,7 @@ def test_admin_login(wd):
             print("     Head_title : "+head_title2)
             link_array.append(sub_m_link_name)
             h1_array.append(head_title2)
-            print
+            print()
     print (link_array)
     print (h1_array)
     assert (link_array)==(h1_array)
@@ -95,16 +94,17 @@ def test_sticker_verify(wd):
     #теперь будем искать в каждой утке наклейку:
     for duck in duck_crowd:
         sticker=duck.find_elements_by_xpath(".//div[starts-with(@class,'sticker')]")
-        print len(sticker)
+        print (len(sticker))
         sticker_sum=sticker_sum+len(sticker)
 
     assert len(duck_crowd) == sticker_sum
 
 
-
+#задание 9
 #1) на странице http://localhost/litecart/admin/?app=countries&doc=countries
 #а) проверить, что страны расположены в алфавитном порядке
-#б) для тех стран, у которых количество зон отлично от нуля -- открыть страницу этой страны и там проверить, что зоны расположены в алфавитном порядке
+#б) для тех стран, у которых количество зон отлично от нуля -- открыть страницу этой страны и там проверить,
+# что зоны расположены в алфавитном порядке
 def test_countries(wd):
     wd.get("http://localhost/litecart/admin/login.php")
     wd.implicitly_wait(60)
@@ -112,20 +112,58 @@ def test_countries(wd):
     find_and_fill_element(wd,element_name="password",value="admin")
     wd.find_element_by_name("login").click()
 
+    #откроем страницу
     wd.get("http://localhost/litecart/admin/?app=countries&doc=countries")
-    #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
-    countries=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[5]")
-    zones_count=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[6]")
-    country_acronym=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[4]")
-    country_list=[]
-    geo_zones__index=[]
-    #print len(countries)
-    for country in countries:
-        country_list.append(country.text)
-        print country.text
-    sorted_country_list=sorted(country_list)
-    assert country_list==sorted_country_list
-    #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
+    # Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
+    country_list = []
+    zones_count=[]
+    country_acronym=[]
+    index_for_link=[]
+    #rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']")
+    rows = wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row' and position() <= 39]")
+    i=0
+    for elements in rows:
+    # теперь пробежим по столбцам текущего tr из цикла
+        column = elements.find_elements_by_tag_name("td")
+        country_list.append(column[4].text)
+        zones_count.append(column[5].text)
+        country_acronym.append(column[3].text)
+        if int(column[5].text) >0:
+            index_for_link.append(i)
+        i=i+1
+    print()
+    print (country_list)
+    print (zones_count)
+    print (country_acronym)
+    print
+    print (index_for_link)
+    for i in index_for_link:
+        print (country_acronym[i])
+        print(country_list[i])
+        print(zones_count[i])
+        wd.get("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code="+str(country_acronym[i]))
+    sleep(10)
+
+
+
+    # wd.get("http://localhost/litecart/admin/?app=countries&doc=countries")
+    # #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[position() <= 10]
+    # countries=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[5]")
+    # zones_count=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[6]")
+    # country_acronym=wd.find_elements_by_xpath(".//table[@class='dataTable']//tr[@class='row']//td[4]")
+    # country_list=[]
+    # geo_zones__index=[]
+    # #print len(countries)
+    # index=0
+    # for country in countries:
+    #     country_list.append(country.text)
+    #     print (country.text)
+    #     print (zones_count(index).text)
+    #
+    #     index=index+1
+    # sorted_country_list=sorted(country_list)
+    # assert country_list==sorted_country_list
+    # #Найдем список стран .//table[@class='dataTable']//tr[@class='row']//td[5]
 
 
     #http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA
