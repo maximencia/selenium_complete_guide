@@ -105,6 +105,38 @@ def test_sticker_verify(wd):
 #а) проверить, что страны расположены в алфавитном порядке
 #б) для тех стран, у которых количество зон отлично от нуля -- открыть страницу этой страны и там проверить,
 # что зоны расположены в алфавитном порядке
+def test_geo_zones(wd,zones_page,flag):
+    if flag == 1:
+        wd.get("http://localhost/litecart/admin/login.php")
+        wd.implicitly_wait(60)
+        find_and_fill_element(wd,element_name="username",value="admin")
+        find_and_fill_element(wd,element_name="password",value="admin")
+        wd.find_element_by_name("login").click()
+
+    #wd.get("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US")
+    wd.get(zones_page)
+    #получим все зоны
+    rows=wd.find_elements_by_xpath(".//*[@id='table-zones']//tr [not(contains (@class, 'header'))]")
+    #print ('123123'+str(len(rows)))
+    i=0
+    zones_name=[]
+    for elements in rows:
+        # теперь пробежим по столбцам текущего tr из цикла
+            column_z = elements.find_elements_by_tag_name("td")
+            zones_name.append(column_z[2].text)
+    # удалим последний элемент. list.pop([i]), потому что это поле используется для фильтров
+    # Удаляет i-ый элемент и возвращает его. Если индекс не указан, удаляется последний элемент
+    zones_name.pop()
+    #print
+    print (zones_name)
+    sorted_zones_list = sorted(zones_name)
+    #print(sorted_zones_list)
+    assert zones_name==sorted_zones_list
+
+def test_geo_zones_local(wd):
+    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US",1)
+    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA",1)
+
 def test_countries(wd):
     wd.get("http://localhost/litecart/admin/login.php")
     wd.implicitly_wait(60)
@@ -140,34 +172,35 @@ def test_countries(wd):
         zone_page =("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code="+str(country_acronym[i]))
         test_geo_zones(wd,zone_page,flag=0)
 
-def test_geo_zones(wd,zones_page,flag):
-    if flag == 1:
-        wd.get("http://localhost/litecart/admin/login.php")
-        wd.implicitly_wait(60)
-        find_and_fill_element(wd,element_name="username",value="admin")
-        find_and_fill_element(wd,element_name="password",value="admin")
-        wd.find_element_by_name("login").click()
+#задание 9
+# на странице http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones
+# зайти в каждую из стран и проверить, что зоны расположены в алфавитном порядке
+def test_geo_zones_page(wd):
+    wd.get("http://localhost/litecart/admin/login.php")
+    wd.implicitly_wait(60)
+    find_and_fill_element(wd,element_name="username",value="admin")
+    find_and_fill_element(wd,element_name="password",value="admin")
+    wd.find_element_by_name("login").click()
+    wd.get("http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones")
+    #зайти в каждую из стран
+    geozones_list_text=[]
+    #множество из ссылок на страницы с зонами
+    geo_links=wd.find_elements_by_xpath(".//*[@id='content']/form/table/tbody/tr[@class='row']/td [not(contains (@style,'text'))]/a")
+    for link in geo_links:
+        print(link.get_attribute('href'))
+        geozones_list_text.append(link.get_attribute('href'))
+        # запоминаем ссылки в спец массив для того чтобы селениум при переключении и обновлении страницы нам ничего не попротил
+        # и небыло ошибки типа python Message: stale element reference: element is not attached to the page document
 
-    #wd.get("http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US")
-    wd.get(zones_page)
-    #получим все зоны
-    rows=wd.find_elements_by_xpath(".//*[@id='table-zones']//tr [not(contains (@class, 'header'))]")
-    #print ('123123'+str(len(rows)))
-    i=0
-    zones_name=[]
-    for elements in rows:
-        # теперь пробежим по столбцам текущего tr из цикла
-            column_z = elements.find_elements_by_tag_name("td")
-            zones_name.append(column_z[2].text)
-    # удалим последний элемент. list.pop([i]), потому что это поле используется для фильтров
-    # Удаляет i-ый элемент и возвращает его. Если индекс не указан, удаляется последний элемент
-    zones_name.pop()
-    #print
-    print (zones_name)
-    sorted_zones_list = sorted(zones_name)
-    #print(sorted_zones_list)
-    assert zones_name==sorted_zones_list
+    #далее бежим уже по спискам в открытых страничках
+    for i in range(len(geozones_list_text)):
+        geozones_list=[] #обнулим список
+        wd.get(geozones_list_text[i])
+        geo_zones_in_selects = wd.find_elements_by_xpath(".//*[@id='table-zones']/tbody/tr/td/select[starts-with(@name,'zones[') and not(contains (@aria-hidden,'true'))]/option[@selected='selected']")
+        for geozones in geo_zones_in_selects:
+            geozones_list.append(geozones.text)
 
-def testets(wd):
-    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=US",1)
-    test_geo_zones(wd,"http://localhost/litecart/admin/?app=countries&doc=edit_country&country_code=CA",1)
+        sorted_geozones_list = sorted(geozones_list)
+        print(geozones_list)
+        assert geozones_list == sorted_geozones_list
+
