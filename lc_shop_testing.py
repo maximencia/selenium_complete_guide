@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+import string,random
 
 @pytest.fixture
 def wd(request):
@@ -124,3 +125,62 @@ def test_item_of_product_verify(wd):
     assert n_product_price_style_font_size == product_price_style_font_size[j]
     assert n_product_price_with_discount_style_font_weight == product_price_with_discount_style_font_weight[j]
     assert n_product_price_with_discount_style_font_size == product_price_with_discount_style_font_size[j]
+
+# Задание 11. Сделайте сценарий регистрации пользователя
+# Сделайте сценарий для регистрации нового пользователя в учебном приложении litecart (не в админке, а в клиентской части магазина).
+#
+# Сценарий должен состоять из следующих частей:
+#
+# 1) регистрация новой учётной записи с достаточно уникальным адресом электронной почты
+# (чтобы не конфликтовало с ранее созданными пользователями),
+# 2) выход (logout), потому что после успешной регистрации автоматически происходит вход,
+# 3) повторный вход в только что созданную учётную запись,
+# 4) и ещё раз выход.
+
+#Проверки можно никакие не делать, только действия -- заполнение полей, нажатия на кнопки и ссылки.
+# Если сценарий дошёл до конца, то есть созданный пользователь смог выполнить вход и выход -- значит создание прошло успешно.
+
+#В форме регистрации есть капча, её нужно отключить в админке учебного приложения на вкладке Settings -> Security.
+def find_and_fill_element(wd, element_name, value):
+    wd.find_element_by_name(element_name).click()
+    wd.find_element_by_name(element_name).clear()
+    wd.find_element_by_name(element_name).send_keys(value)
+
+domains = [ "hotmail.com", "gmail.com", "aol.com", "mail.com" , "mail.kz", "yahoo.com"]
+letters = string.ascii_lowercase[:12]
+
+def get_random_domain(domains): return random.choice(domains)
+def get_random_name(letters, length): return ''.join(random.choice(letters) for i in range(length))
+def generate_random_emails(nb, length): return [get_random_name(letters, length) + '@' + get_random_domain(domains) for i in range(nb)]
+def generate_mail(): return (generate_random_emails(1, 7))
+
+def test_new_subscriber_registration(wd):
+    #подготовим рандомный mail
+    mail=generate_mail()
+    wd.get("http://localhost/litecart/en/")
+    wd.implicitly_wait(60)
+    wd.find_element_by_link_text("New customers click here").click()
+
+    find_and_fill_element(wd, 'tax_id', "1")
+    find_and_fill_element(wd, 'company', "2")
+    find_and_fill_element(wd, 'firstname', "3")
+    find_and_fill_element(wd, 'lastname', "4")
+    find_and_fill_element(wd, 'address1', "5")
+    find_and_fill_element(wd, 'address2', "6")
+    find_and_fill_element(wd, 'postcode', "123456")
+    find_and_fill_element(wd, 'city', "8")
+    find_and_fill_element(wd, 'email', mail[0])
+    find_and_fill_element(wd, 'phone', "92112345678")
+    find_and_fill_element(wd, 'password', "1111")
+    find_and_fill_element(wd, 'confirmed_password', "1111")
+
+    ###
+    wd.find_element_by_name("create_account").click()
+
+    ###
+    wd.find_element_by_link_text("Logout").click()
+
+    find_and_fill_element(wd, 'password', "1111")
+    find_and_fill_element(wd, 'email', mail[0])
+    wd.find_element_by_name("login").click()
+    wd.find_element_by_link_text("Logout").click()
