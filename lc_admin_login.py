@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-import pytest
+import pytest,string,random
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -178,3 +178,68 @@ def test_geo_zones_page(wd):
         print(geozones_list)
         assert geozones_list == sorted_geozones_list
 
+
+domains = [ "hotmail.com", "gmail.com", "aol.com", "mail.com" , "mail.kz", "yahoo.com"]
+letters = string.ascii_lowercase[:12]
+
+def get_random_domain(domains): return random.choice(domains)
+def get_random_name(letters, length): return ''.join(random.choice(letters) for i in range(length))
+def generate_random_emails(nb, length): return [get_random_name(letters, length) + '@' + get_random_domain(domains) for i in range(nb)]
+def generate_mail(): return (generate_random_emails(1, 7))
+
+
+def test_new_product_add(wd):
+        wd.get("http://localhost/litecart/admin/login.php")
+        wd.implicitly_wait(60)
+        find_and_fill_element(wd,element_name="username",value="admin")
+        find_and_fill_element(wd,element_name="password",value="admin")
+        wd.find_element_by_name("login").click()
+
+        name_of_new_prod=get_random_name(letters,10)
+
+        wd.find_element_by_link_text("Catalog").click()
+        wd.find_element_by_link_text("Add New Product").click()
+
+        wd.find_element_by_css_selector("label").click()
+        if not wd.find_element_by_name("status").is_selected():
+            wd.find_element_by_name("status").click()
+
+        find_and_fill_element(wd,element_name='name[en]',value=name_of_new_prod)
+        find_and_fill_element(wd,element_name='code',value='3')
+        find_and_fill_element(wd,element_name='quantity',value='10')
+        find_and_fill_element(wd,element_name='new_images[]',value='c:\selenium_complete_guide\data\duck_image.png')
+    #   find_and_fill_element(wd,element_name='date_valid_from',value='02 12 2015') - вот так не работает!!! потому что
+        # нельзя clear делать
+        wd.find_element_by_name('date_valid_from').click()
+        wd.find_element_by_name('date_valid_from').send_keys('2015-12-12')
+        wd.find_element_by_name('date_valid_to').click()
+        wd.find_element_by_name('date_valid_to').send_keys('2017-12-12')
+    #    find_and_fill_element(wd,element_name='date_valid_to',value='2017-12-12')
+
+        wd.find_element_by_link_text("Information").click()
+        if not wd.find_element_by_xpath(
+            "//div[@id='tab-information']//select[normalize-space(.)='-- Select -- ACME Corp.']//option[2]").is_selected():
+            wd.find_element_by_xpath(
+            "//div[@id='tab-information']//select[normalize-space(.)='-- Select -- ACME Corp.']//option[2]").click()
+
+        find_and_fill_element(wd,element_name='keywords',value='my_duck')
+        find_and_fill_element(wd,element_name='short_description[en]',value='my_duck')
+
+        wd.find_element_by_link_text("Prices").click()
+
+        wd.find_element_by_name("purchase_price").send_keys("22")
+        if not wd.find_element_by_xpath("//div[@id='tab-prices']/table[1]/tbody/tr/td/select//option[2]").is_selected():
+            wd.find_element_by_xpath("//div[@id='tab-prices']/table[1]/tbody/tr/td/select//option[2]").click()
+
+        find_and_fill_element(wd,element_name='prices[USD]', value='23')
+
+        wd.find_element_by_name("save").click()
+        wd.find_element_by_id("content").click()
+
+        #проверим что товар появился на странице просто сравнив его имя
+        #http: // localhost / litecart / admin /?app = catalog & doc = catalog
+        wd.find_element_by_link_text("Catalog").click()
+        test="//a[text()='"+str(name_of_new_prod)+"']"
+        assert_element = wd.find_elements_by_xpath(test)
+        print (len(assert_element))
+        assert len(assert_element)==1
