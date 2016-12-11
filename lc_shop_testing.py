@@ -184,3 +184,5 @@ def test_new_subscriber_registration(wd):
     find_and_fill_element(wd, 'email', mail[0])
     wd.find_element_by_name("login").click()
     wd.find_element_by_link_text("Logout").click()
+
+
