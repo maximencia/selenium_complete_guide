@@ -194,11 +194,14 @@ def test_new_subscriber_registration(wd):
 # 4) вернуться на главную страницу, повторить предыдущие шаги ещё два раза, чтобы в общей сложности в корзине было 3 единицы товара
 # 5) открыть корзину (в правом верхнем углу кликнуть по ссылке Checkout)
 # 6) удалить все товары из корзины один за другим, после каждого удаления подождать, пока внизу обновится таблица
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 def test_add_prod_to_cart(wd):
     wd.get("http://localhost/litecart/en/")
     wd.implicitly_wait(60)
-    for i in range(3):
+    for i in range(1,4):
 
         #выберем товар на угад и добавим его в таблицу
         duck_crowd = wd.find_elements_by_xpath(".//ul[@class='listing-wrapper products']//li")
@@ -206,11 +209,24 @@ def test_add_prod_to_cart(wd):
         go= duck_crowd[random.randint(0,len(duck_crowd)-1)].find_element_by_xpath("./a[@class='link']").click()
         wd.find_element_by_name('add_cart_product').click()
         sleep(1)
+        #http: // stackoverflow.com / questions / 18607999 / how - to - wait - and -get - value - of - span - object - in -selenium - python - binding
+
+        #.//*[ @id='cart']//a//span[ @class ='quantity']
+        #< spanclass ="quantity" style="" > 1 < / span >
+        wait=WebDriverWait(wd,10)
+        #подготовим условие ".//*[ @ id = 'cart']//a//span[@class='quantity' and text()!=0")
+        #x_path=(".//*[ @ id = 'cart']//a//span[@class='quantity' and text()="+str(i)+"]")
+        #print(x_path)
+        #element = wait.until(EC.text_to_be_present_in_element(By.XPATH,x_path))
+        #element = wait.until(EC.text_to_be_present_in_element(By.XPATH,".//*[ @ id = 'cart']//a//span[@class='quantity' and text()=1]"))
+        element = wait.until(EC.text_to_be_present_in_element(
+                                                              (By.XPATH,".//*[ @ id = 'cart']//a//span[@class='quantity']"),
+                                                                str(i)))
         wd.get("http://localhost/litecart/en/")
 
     #открыть корзину (в правом верхнем углу кликнуть по ссылке Checkout)
     wd.get("http://localhost/litecart/en/checkout")
-    for i in range(3):
+    for i in range(1,3):
         wd.find_element_by_name('remove_cart_item').click()
         sleep(1)
 
