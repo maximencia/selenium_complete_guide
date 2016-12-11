@@ -185,4 +185,33 @@ def test_new_subscriber_registration(wd):
     wd.find_element_by_name("login").click()
     wd.find_element_by_link_text("Logout").click()
 
+# Задание 13. Сделайте сценарий работы с корзиной
+# Сделайте сценарий для добавления товаров в корзину и удаления товаров из корзины.
+# Сценарий должен состоять из следующих частей:
+# 1) открыть страницу какого-нибудь товара
+# 2) добавить его в корзину
+# 3) подождать, пока счётчик товаров в корзине обновится
+# 4) вернуться на главную страницу, повторить предыдущие шаги ещё два раза, чтобы в общей сложности в корзине было 3 единицы товара
+# 5) открыть корзину (в правом верхнем углу кликнуть по ссылке Checkout)
+# 6) удалить все товары из корзины один за другим, после каждого удаления подождать, пока внизу обновится таблица
+
+def test_add_prod_to_cart(wd):
+    wd.get("http://localhost/litecart/en/")
+    wd.implicitly_wait(60)
+    for i in range(3):
+
+        #выберем товар на угад и добавим его в таблицу
+        duck_crowd = wd.find_elements_by_xpath(".//ul[@class='listing-wrapper products']//li")
+        print("Total count of ducks:" + str(len(duck_crowd)))
+        go= duck_crowd[random.randint(0,len(duck_crowd)-1)].find_element_by_xpath("./a[@class='link']").click()
+        wd.find_element_by_name('add_cart_product').click()
+        sleep(1)
+        wd.get("http://localhost/litecart/en/")
+
+    #открыть корзину (в правом верхнем углу кликнуть по ссылке Checkout)
+    wd.get("http://localhost/litecart/en/checkout")
+    for i in range(3):
+        wd.find_element_by_name('remove_cart_item').click()
+        sleep(1)
+
 
