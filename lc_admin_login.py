@@ -261,7 +261,16 @@ def test_new_product_add(wd):
 # потом переключиться в новое окно, закрыть его, вернуться обратно, и повторить эти действия для всех таких ссылок.
 #
 # Не забудьте, что новое окно открывается не мгновенно, поэтому требуется ожидание открытия окна.
-def test_new_product_add(wd):
+from contextlib import contextmanager
+
+@contextmanager #https://docs.python.org/2.7/library/contextlib.html
+def wait_for_new_window(driver, timeout=10): #http://stackoverflow.com/questions/26641779/python-selenium-how-to-wait-for-new-window-opens
+    handles_before = driver.window_handles
+    yield
+    WebDriverWait(driver, timeout).until(
+        lambda driver: len(handles_before) != len(driver.window_handles))
+
+def test_ext_links(wd):
     wd.get("http://localhost/litecart/admin/login.php")
     wd.implicitly_wait(60)
     find_and_fill_element(wd, element_name="username", value="admin")
@@ -283,23 +292,26 @@ def test_new_product_add(wd):
     print(old_windows)
     # нажимаем    на    ссылку, которая    открывает    документ    в    новом    окне
     #wd.findElement(By.tagName("a")).click();
-    for i in range (len(all_ex_link)):
-        print("i="+str(i))
-        all_ex_link[i].click()
-        sleep(3)
-        # здесь    нужно    будет    дождаться    открытия    нового    окна    \
+    for j in range (10):                         #нагрузим
+        for i in range (len(all_ex_link)):
+            print("i="+str(i))
+            with wait_for_new_window(wd,10):
+                all_ex_link[i].click()
+            #sleep(3)
+            # здесь    нужно    будет    дождаться    открытия    нового    окна    \
 
-        # получаем новый    набор    дескрипторов, включающий    уже    и    новое    окно
-        new_windows = wd.window_handles
-        print('new_windows')
-        print(new_windows)
-        # получаем     дескриптор    нового    окна (из одного списка вычтем другой)
-        new_window = list(set(new_windows).difference(old_windows))
-        print('new_window')
-        print(new_window)
-        #закроем новое окно
-        wd.switch_to_window(new_window[0])
-        wd.close()
-        wd.switch_to_window(main_window)
-        sleep(5)
+            # получаем новый    набор    дескрипторов, включающий    уже    и    новое    окно
+            new_windows = wd.window_handles
+            print('new_windows')
+            print(new_windows)
+            # получаем     дескриптор    нового    окна (из одного списка вычтем другой)
+            new_window = list(set(new_windows).difference(old_windows))
+            print('new_window')
+            print(new_window)
+            #закроем новое окно
+            wd.switch_to_window(new_window[0])
+            wd.close()
+            wd.switch_to_window(main_window)
+            #sleep(5)  без слипов на platform win32 -- Python 3.5.2, pytest-3.0.4, py-1.4.31, pluggy-0.4.0 за 16 сек отработало
+
 
