@@ -243,3 +243,63 @@ def test_new_product_add(wd):
         assert_element = wd.find_elements_by_xpath(test)
         print (len(assert_element))
         assert len(assert_element)==1
+
+
+# Задание 14. Проверьте, что ссылки открываются в новом окне
+# Сделайте сценарий, который проверяет, что ссылки на странице редактирования страны открываются в новом окне.
+#
+# Сценарий должен состоять из следующих частей:
+#
+# 1) зайти в админку
+# 2) открыть пункт меню Countries (или страницу http://localhost/litecart/admin/?app=countries&doc=countries)
+# 3) открыть на редактирование какую-нибудь страну или начать создание новой
+# 4) возле некоторых полей есть ссылки с иконкой в виде квадратика со стрелкой --
+# они ведут на внешние страницы и открываются в новом окне, именно это и нужно проверить.
+#
+# Конечно, можно просто убедиться в том, что у ссылки есть атрибут target="_blank".
+# Но в этом упражнении требуется именно кликнуть по ссылке, чтобы она открылась в новом окне,
+# потом переключиться в новое окно, закрыть его, вернуться обратно, и повторить эти действия для всех таких ссылок.
+#
+# Не забудьте, что новое окно открывается не мгновенно, поэтому требуется ожидание открытия окна.
+def test_new_product_add(wd):
+    wd.get("http://localhost/litecart/admin/login.php")
+    wd.implicitly_wait(60)
+    find_and_fill_element(wd, element_name="username", value="admin")
+    find_and_fill_element(wd, element_name="password", value="admin")
+    wd.find_element_by_name("login").click()
+    print()
+
+    wd.get("http://localhost/litecart/admin/?app=countries&doc=countries")
+    wd.find_element_by_xpath(".//*[@id='content']/div/a").click()
+    all_ex_link=wd.find_elements_by_xpath(".//*[@id='content']/form/table[1]//a[@target='_blank']")
+    print("Total ext_link: "+ str(len(all_ex_link)))
+
+    # получаем    набор    дескрипторов    текущих    открытых    окон
+    main_window = wd.current_window_handle
+    print('main_window')
+    print(main_window)
+    old_windows = wd.window_handles
+    print('old_windows')
+    print(old_windows)
+    # нажимаем    на    ссылку, которая    открывает    документ    в    новом    окне
+    #wd.findElement(By.tagName("a")).click();
+    for i in range (len(all_ex_link)):
+        print("i="+str(i))
+        all_ex_link[i].click()
+        sleep(3)
+        # здесь    нужно    будет    дождаться    открытия    нового    окна    \
+
+        # получаем новый    набор    дескрипторов, включающий    уже    и    новое    окно
+        new_windows = wd.window_handles
+        print('new_windows')
+        print(new_windows)
+        # получаем     дескриптор    нового    окна (из одного списка вычтем другой)
+        new_window = list(set(new_windows).difference(old_windows))
+        print('new_window')
+        print(new_window)
+        #закроем новое окно
+        wd.switch_to_window(new_window[0])
+        wd.close()
+        wd.switch_to_window(main_window)
+        sleep(5)
+
