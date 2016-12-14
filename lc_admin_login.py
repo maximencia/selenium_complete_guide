@@ -315,3 +315,66 @@ def test_ext_links(wd):
             #sleep(5)  без слипов на platform win32 -- Python 3.5.2, pytest-3.0.4, py-1.4.31, pluggy-0.4.0 за 16 сек отработало
 
 
+# Задание 17. Проверьте отсутствие ошибок в логе браузера
+# Сделайте сценарий, который проверяет, не появляются ли сообщения об ошибках при открытии страниц в учебном приложении, а именно -- страниц товаров в каталоге в административной панели.
+#
+# Сценарий должен состоять из следующих частей:
+#
+# 1) зайти в админку
+# 2) открыть каталог, категорию, которая содержит товары (страница http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1)
+# 3) последовательно открывать страницы товаров и проверять, не появляются ли в логе браузера сообщения об ошибках (любого уровня критичности)
+#
+# Можно оформить сценарий либо как тест, либо как отдельный исполняемый файл.
+
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+
+def check_exists_by_xpath(xpath):
+    try:
+        wd.find_element_by_xpath(xpath)
+    except NoSuchElementException:
+        return False
+    return True
+
+def check_exists_by_xpath2(wd,xpath):
+    return len(wd.find_elements_by_xpath(xpath)) > 0
+
+def test_error_in_browsers_log(wd):
+    wd.get("http://localhost/litecart/admin/login.php")
+    wd.implicitly_wait(60)
+    find_and_fill_element(wd, element_name="username", value="admin")
+    find_and_fill_element(wd, element_name="password", value="admin")
+    wd.find_element_by_name("login").click()
+    print()
+
+    wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1")
+
+    not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+    print(len(not_open_folder))
+
+    while not successful:
+        not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+        print(len(not_open_folder))
+        not_open_folder
+        response = makeRequest(eachId)
+        if response == 'market is closed':
+            time.sleep(24*60*60) #sleep for one day
+        else:
+            successful = True
+
+   #  #найдем все папки закрытые и откроим их
+   #  #not_open_folder=wd.find_element_by_xpath(".//*[@id='content']/form/table/tbody/tr[@class='row']/td[./i[@class='fa fa-folder']]")
+   #  while True:
+   #      not_open_folder=wd.find_element_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+   #      not_open_folder.find_element_by_xpath("./a").click()
+   #
+   #      print((not_open_folder))
+   #
+   #      if check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]") == False:
+   #          return check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+   #
+   # # check_exists_by_xpath(".//td[./i[@class='fa fa-folder']]/a")
+   #  check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder']]")
