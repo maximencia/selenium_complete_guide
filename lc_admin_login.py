@@ -332,15 +332,32 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
+
+
 def check_exists_by_xpath(wd,xpath):
     try:
+        #wait = WebDriverWait(wd, 10)
+        #wait.until(EC.staleness_of(order[0]))
         wd.find_elements_by_xpath(xpath)
     except NoSuchElementException:
         return False
     return True
-
 def check_exists_by_xpath2(wd,xpath):
     return len(wd.find_elements_by_xpath(xpath)) == 0
+#
+# ...wait_for_new_windowwd.implicitly_wait(1)
+#     while  check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"):
+#         print (check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"))
+#         i=i+1
+#         print(i)
+#         #not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+#         #not_open_folder.find_elements_by_xpath("./a").click()
+#         #print(len(not_open_folder))
+#
+## тяжелый случай - алексей говорит нужно ожидать не отсутсвие элемента
+# а присутсвие того элемента который подтверждает отсутствие первого
+## Будем думать а пока сделаем по другому.
+
 
 def test_error_in_browsers_log(wd):
     wd.get("http://localhost/litecart/admin/login.php")
@@ -351,42 +368,25 @@ def test_error_in_browsers_log(wd):
     print()
 
     wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1")
-    i=1
-    while  check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"):
-        print (check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"))
-        i=i+1
+    #wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog")#  у меня товаров в корне больше.
+    #[23:11:50] maxim rumyantsev: Алексей подскажите нужно ли мучатся с подкаталогами в задание про логирование, или достаточно прокликать только товары лежащие в корне.
+    #[23:12:11] Alexei Barantsev: подкаталоги не нужно
+    #тогда проще
+    #найдем все ссылки с товарами и будем кликать последовательно
+    links=wd.find_elements_by_xpath(".//*[@id='content']/form/table/tbody/tr/td[./img and ./a]/a")
+    links_mass=[]
+    for link in links:
+        links_mass.append(link.get_attribute('href'))
+    links_count=len(links_mass)
+    print(links_count)
+    for i in range(links_count):
+        links = wd.find_elements_by_xpath(".//*[@id='content']/form/table/tbody/tr/td[./img and ./a]/a")
+        links[i].click()
         print(i)
-        #not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-        #not_open_folder.find_elements_by_xpath("./a").click()
-        #print(len(not_open_folder))
-
+        wd.find_element_by_name("cancel").click()
+    #
+    # print('Count of link:'+str(len(links_mass)))
+    # for i in range(len(links)):
+    #
+    #     print (links_mass[i])
     print('ГОТОВО')
-    sleep(5)
-    #not_open_folder=wd.find_element_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-   #not_open_folder.find_element_by_xpath("./a").click()
-
-
-
-    # while not successful:
-    #     not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-    #     print(len(not_open_folder))
-    #     not_open_folder
-    #     response = makeRequest(eachId)
-    #     if response == 'market is closed':
-    #         time.sleep(24*60*60) #sleep for one day
-    #     else:
-    #         successful = True
-
-   #  #найдем все папки закрытые и откроим их
-   #  #not_open_folder=wd.find_element_by_xpath(".//*[@id='content']/form/table/tbody/tr[@class='row']/td[./i[@class='fa fa-folder']]")
-   #  while True:
-   #      not_open_folder=wd.find_element_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-   #      not_open_folder.find_element_by_xpath("./a").click()
-   #
-   #      print((not_open_folder))
-   #
-   #      if check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]") == False:
-   #          return check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-   #
-   # # check_exists_by_xpath(".//td[./i[@class='fa fa-folder']]/a")
-   #  check_exists_by_xpath2(wd,".//td[./i[@class='fa fa-folder']]")
