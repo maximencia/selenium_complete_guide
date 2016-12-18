@@ -4,10 +4,18 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 
 @pytest.fixture
 def wd(request):
-    driver = webdriver.Chrome()
+
+    caps = DesiredCapabilities.CHROME
+    #caps['loggingPrefs'] = {'performance': 'ALL'}
+    caps['loggingPrefs'] = {'browser': 'ALL'}
+    #caps['loggingPrefs'] = {'browser': 'INFO'}
+
+    driver = webdriver.Chrome(desired_capabilities=caps)
     request.addfinalizer(driver.quit)
     return driver
 
@@ -358,7 +366,7 @@ def check_exists_by_xpath2(wd,xpath):
 # а присутсвие того элемента который подтверждает отсутствие первого
 ## Будем думать а пока сделаем по другому.
 
-
+import re
 def test_error_in_browsers_log(wd):
     wd.get("http://localhost/litecart/admin/login.php")
     wd.implicitly_wait(60)
@@ -369,24 +377,43 @@ def test_error_in_browsers_log(wd):
 
     wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1")
     #wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog")#  у меня товаров в корне больше.
-    #[23:11:50] maxim rumyantsev: Алексей подскажите нужно ли мучатся с подкаталогами в задание про логирование, или достаточно прокликать только товары лежащие в корне.
+    #[23:11:50] maxim rumyantsev: Алексей подскажите нужно ли мучатся с подкаталогами в задание про логирование,
+    #  или достаточно прокликать только товары лежащие в корне.
     #[23:12:11] Alexei Barantsev: подкаталоги не нужно
     #тогда проще
     #найдем все ссылки с товарами и будем кликать последовательно
     links=wd.find_elements_by_xpath(".//*[@id='content']/form/table/tbody/tr/td[./img and ./a]/a")
-    links_mass=[]
-    for link in links:
-        links_mass.append(link.get_attribute('href'))
-    links_count=len(links_mass)
-    print(links_count)
+    links_count=len(links)
+
+    print (wd.log_types)
+
     for i in range(links_count):
         links = wd.find_elements_by_xpath(".//*[@id='content']/form/table/tbody/tr/td[./img and ./a]/a")
+        print(links[i].get_attribute('href'))
+        text3 = re.sub(r'http:\/\/localhost\/litecart\/admin\/\?app=catalog\&doc=edit_product\&', '_', links[i].get_attribute('href'),flags=re.IGNORECASE)
+        text4 = re.sub(r'\&', '_', text3, flags=re.IGNORECASE)
+        page_name = re.sub(r'=', '_', text4, flags=re.IGNORECASE)
+
         links[i].click()
         print(i)
+        for l in wd.get_log("browser"):
+            print(l)
+        #перформанс показывает:
+        #for entry in wd.get_log('performance'):
+        #    print (entry)
+
+        #сделаем еще скрин для утяжеления:
+        screen_path=str("c:\\selenium_complete_guide\\temp\\"+str(i)+'_'+page_name+".jpg")
+        wd.get_screenshot_as_file(screen_path)
         wd.find_element_by_name("cancel").click()
+
     #
-    # print('Count of link:'+str(len(links_mass)))
-    # for i in range(len(links)):
-    #
-    #     print (links_mass[i])
+    # КАК НАПОЛУЧАТЬ ОШИБОК В ЛОГ:
+    # Коллеги, у    меня    перфоманс    выводится    а    ошибок    никаких    не    дает.Задание    про    логирование.
+    # О ! mySql    выключил    в    процессе.Потом    тесты    и    mySql - перезапустил - теперь    показывает.    Ошибся
+    # я.Тут    ктото    советовал    сеть    отключить! Так    я    отключил    и    забыл    про    нее - по    началу    все
+    # работало.А    теперь    чтото    типо    {'level': 'SEVERE',
+    #  'message': 'http://browser-update.org/update.js - Failed to load resource: net::ERR_INTERNET_DISCONNECTED',
+    #  'source': 'network', 'timestamp': 1482097637480}
+    # :)
     print('ГОТОВО')

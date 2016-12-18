@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import string,random
+import re
 a = 3
 b = 5
 r = 0  # Чтобы было, чем заполнять
@@ -32,3 +33,12 @@ while not b:
     print(i)
     if i==10:
         b=True
+
+text="http://localhost/litecart/admin/?app=catalog&doc=edit_product&category_id=0&product_id=7"
+text2=re.sub(r'\sAND\s', ' & ', 'Baked Beans And Spam', flags=re.IGNORECASE)
+text3=re.sub(r'http:\/\/localhost\/litecart\/admin\/\?app=catalog\&doc=edit_product\&', '_', text, flags=re.IGNORECASE)
+text4=re.sub(r'\&', '_', text3, flags=re.IGNORECASE)
+text4=re.sub(r'=', '_', text4, flags=re.IGNORECASE)
+print (text3)
+print (text4)
+print (text5)
