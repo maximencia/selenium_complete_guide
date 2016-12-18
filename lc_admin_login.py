@@ -332,15 +332,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
-def check_exists_by_xpath(xpath):
+def check_exists_by_xpath(wd,xpath):
     try:
-        wd.find_element_by_xpath(xpath)
+        wd.find_elements_by_xpath(xpath)
     except NoSuchElementException:
         return False
     return True
 
 def check_exists_by_xpath2(wd,xpath):
-    return len(wd.find_elements_by_xpath(xpath)) > 0
+    return len(wd.find_elements_by_xpath(xpath)) == 0
 
 def test_error_in_browsers_log(wd):
     wd.get("http://localhost/litecart/admin/login.php")
@@ -351,19 +351,31 @@ def test_error_in_browsers_log(wd):
     print()
 
     wd.get("http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1")
+    i=1
+    while  check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"):
+        print (check_exists_by_xpath(wd,".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]"))
+        i=i+1
+        print(i)
+        #not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+        #not_open_folder.find_elements_by_xpath("./a").click()
+        #print(len(not_open_folder))
 
-    not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-    print(len(not_open_folder))
+    print('ГОТОВО')
+    sleep(5)
+    #not_open_folder=wd.find_element_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+   #not_open_folder.find_element_by_xpath("./a").click()
 
-    while not successful:
-        not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
-        print(len(not_open_folder))
-        not_open_folder
-        response = makeRequest(eachId)
-        if response == 'market is closed':
-            time.sleep(24*60*60) #sleep for one day
-        else:
-            successful = True
+
+
+    # while not successful:
+    #     not_open_folder=wd.find_elements_by_xpath(".//td[./i[@class='fa fa-folder' and @style='color: #cccc66; margin-left: 32px;']]")
+    #     print(len(not_open_folder))
+    #     not_open_folder
+    #     response = makeRequest(eachId)
+    #     if response == 'market is closed':
+    #         time.sleep(24*60*60) #sleep for one day
+    #     else:
+    #         successful = True
 
    #  #найдем все папки закрытые и откроим их
    #  #not_open_folder=wd.find_element_by_xpath(".//*[@id='content']/form/table/tbody/tr[@class='row']/td[./i[@class='fa fa-folder']]")

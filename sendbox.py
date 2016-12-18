@@ -26,3 +26,9 @@ def generate_mail(): return (generate_random_emails(1, 7))
 
 p=generate_mail();
 print (p)
+b=False
+while not b:
+    i=i+1
+    print(i)
+    if i==10:
+        b=True
