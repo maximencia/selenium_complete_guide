@@ -416,4 +416,4 @@ def test_error_in_browsers_log(wd):
     #  'message': 'http://browser-update.org/update.js - Failed to load resource: net::ERR_INTERNET_DISCONNECTED',
     #  'source': 'network', 'timestamp': 1482097637480}
     # :)
-    print('ГОТОВО')
+    print(u'ГОТОВО')
