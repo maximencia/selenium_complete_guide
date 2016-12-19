@@ -1,5 +1,6 @@
 import time
 from model.customer import Customer
+from model.product import Product
 
 
 def current_time_millis():
@@ -13,3 +14,8 @@ valid_customers = [Customer(firstname="Adam", lastname="Smith", phone="+01234567
                    # ...
                    ]
 
+valid_product = [Product(name="Green Duck"),
+                 # Product(name="Purple Duck"),
+                 # Product(name="Blue Duck")
+                 # ...
+                 ]

@@ -54,3 +54,8 @@ def test_add_prod_to_cart(wd):
         #если .//*[@id='order_confirmation-wrapper']/table/tbody/tr/td[@class="unit-cost"] есть то элементы еще остались.
         #sleep(1)
 
+# app/application.py
+# model/custumer.py -> product.py +
+# pages/ 3 страницы
+#                  product_list_page.py
+# test/
