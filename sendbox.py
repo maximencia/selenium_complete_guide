@@ -44,3 +44,28 @@ print (text4)
 print (text5)
 
 print (u'ГОТОВО')
+
+# # content of test_expectation.py
+# import pytest
+# @pytest.mark.parametrize("test_input,expected", [
+#     ("3+5", 8),
+#     ("2+4", 6),
+#     ("6*9", 42),
+# ])
+# def test_eval(test_input, expected):
+#     assert eval(test_input) == expected
+#
+
+
+#!/usr/bin/env python
+import random
+
+words =  ["Alex", "Kate", "Love", "World", "Peace", "Putin","World2", "Peace2", "Putin2",]
+unique_words = list(set(words))
+random.shuffle(unique_words) # shuffle using default Mersenne Twister generator
+random.SystemRandom().shuffle(unique_words)  # OS-provided generator
+print("\n".join(unique_words))
+print
+print (unique_words[0])
+print (unique_words[1])
+print (unique_words[2])

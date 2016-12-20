@@ -26,6 +26,8 @@ def test_add_prod_to_cart(wd):
     print()
     wd.get("http://localhost/litecart/en/")
     wd.implicitly_wait(60)
+
+
     for i in range(1,4):  #
         print(str(i)+'.')
         #выберем товар на угад и добавим его в таблицу

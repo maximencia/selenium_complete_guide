@@ -4,6 +4,7 @@ from pages.customer_list_page import CustomerListPage
 from pages.registration_page import RegistrationPage
 
 from pages.product_list_page import ProductListPage
+from pages.cart_page import CartPage
 
 class Application:
 
@@ -14,6 +15,7 @@ class Application:
         self.customer_list_page = CustomerListPage(self.driver)
 
         self.product_list_page =ProductListPage(self.driver)
+        self.cart_page =CartPage(self.driver)
 
     def quit(self):
         self.driver.quit()
@@ -41,3 +43,19 @@ class Application:
     def add_new_product_to_cart(self,product):
         self.product_list_page.open()
         self.product_list_page.add_in_cart(product)
+
+    def del_product_from_cart(self,product):
+        self.cart_page.open()
+        self.cart_page.del_from_cart(product)
+
+    def delete_all_from_cart(self):
+        self.cart_page.open()
+        self.cart_page.del_all_from_cart()
+
+    def get_quantity_of_product_in_cart_on_prod_page(self):
+        self.product_list_page.open()
+        return self.product_list_page.numbers_of_prod_in_cart_on_prod_page()
+
+    def add_random_distinct_prod(self,quantity):
+        self.product_list_page.open()
+        self.product_list_page.add_distinct_random_product(quantity)
